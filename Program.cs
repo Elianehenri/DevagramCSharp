@@ -1,7 +1,12 @@
+using DevagramCSharp.Models;
+using DevagramCSharp.Repository;
 using DevagramCSharp.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer;
 using System.Text;
+using DevagramCSharp.Repository.Impl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +16,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//configuraçao do banco de dados
+var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<DevagramContext>(options => options.UseSqlServer(connectionstring));
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
+
 
 //token service => todas as APis tenha verificaçao JWT
 var chaveCriptografia = Encoding.ASCII.GetBytes(ChaveJWT.ChaveSecreta);
@@ -43,6 +55,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
