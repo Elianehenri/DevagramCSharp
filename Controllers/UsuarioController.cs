@@ -1,6 +1,8 @@
 ﻿using DevagramCSharp.Dtos;
 using DevagramCSharp.Models;
 using DevagramCSharp.Repository;
+using DevagramCSharp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevagramCSharp.Controllers
@@ -11,12 +13,12 @@ namespace DevagramCSharp.Controllers
     {
         //controle de logs
         public readonly ILogger<UsuarioController> _logger;
-        public readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioController(ILogger<UsuarioController> logger, IUsuarioRepository usuarioRepository)
+
+        public UsuarioController(ILogger<UsuarioController> logger,
+            IUsuarioRepository usuarioRepository) : base(usuarioRepository)//herdando da base controller
         {
             _logger = logger;
-            _usuarioRepository = usuarioRepository;
         }
 
 
@@ -25,14 +27,14 @@ namespace DevagramCSharp.Controllers
         {
             try
             {
-                Usuario usuario = new Usuario()
-                {
-                    Email = "nani@teste.com.br",
-                    Nome = "Eliane",
-                    Id = 16
-                };
+                Usuario usuario = LerToken();
 
-                return Ok(usuario);
+                return Ok(new UsuarioRespostaDto
+                {
+                    Email = usuario.Email,
+                    Nome = usuario.Nome
+                });
+
             }
             catch (Exception e)
             {
@@ -46,24 +48,25 @@ namespace DevagramCSharp.Controllers
         }
         //salvar novo usuario
         [HttpPost]
-        public IActionResult SalvarUsuario([FromBody] Usuario usuario)
+        [AllowAnonymous]
+        public IActionResult SalvarUsuario([FromForm] UsuarioRequisicaoDto usuariodto)
         {
             try
             {
 
-                if (usuario != null)
+                if (usuariodto != null)
                 {
                     var erros = new List<string>();
 
-                    if (string.IsNullOrEmpty(usuario.Nome) || string.IsNullOrWhiteSpace(usuario.Nome))
+                    if (string.IsNullOrEmpty(usuariodto.Nome) || string.IsNullOrWhiteSpace(usuariodto.Nome))
                     {
                         erros.Add("Nome inválido");
                     }
-                    if (string.IsNullOrEmpty(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Email) || !usuario.Email.Contains("@"))
+                    if (string.IsNullOrEmpty(usuariodto.Email) || string.IsNullOrWhiteSpace(usuariodto.Email) || !usuariodto.Email.Contains("@"))
                     {
                         erros.Add("E-mail inválido");
                     }
-                    if (string.IsNullOrEmpty(usuario.Senha) || string.IsNullOrWhiteSpace(usuario.Senha))
+                    if (string.IsNullOrEmpty(usuariodto.Senha) || string.IsNullOrWhiteSpace(usuariodto.Senha))
                     {
                         erros.Add("Senha inválido");
                     }
@@ -77,8 +80,19 @@ namespace DevagramCSharp.Controllers
                         });
                     }
 
+                    CosmicService cosmicservice = new CosmicService();
+
+                    Usuario usuario = new Usuario()
+                    {
+                        Email = usuariodto.Email,
+                        Senha = usuariodto.Senha,
+                        Nome = usuariodto.Nome,
+                        FotoPerfil = cosmicservice.EnviarImagem(new ImagemDto { Imagem = usuariodto.FotoPerfil, Nome = usuariodto.Nome.Replace(" ", "") })
+                    };
+
+
                     usuario.Senha = Utils.MD5Utils.GerarHashMD5(usuario.Senha);
-                    usuario.Email = usuario.Email.ToLower();
+                    usuario.Email = usuariodto.Email.ToLower();
 
                     if (!_usuarioRepository.VerificarEmail(usuario.Email))
                     {
@@ -95,7 +109,7 @@ namespace DevagramCSharp.Controllers
 
                 }
 
-                return Ok(usuario);
+                return Ok("Usuario Salvo com Sucesso.");
             }
             catch (Exception e)
             {
