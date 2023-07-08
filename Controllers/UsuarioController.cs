@@ -46,7 +46,7 @@ namespace DevagramCSharp.Controllers
                 });
             }
         }
-        //
+        //atualizar usuario
         [HttpPut]
         public IActionResult AtualizarUsuario([FromForm] UsuarioRequisicaoDto usuariodto)
         {
