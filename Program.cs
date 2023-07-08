@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen();
 //configuraçao do banco de dados
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DevagramContext>(options => options.UseSqlServer(connectionstring));
+builder.Services.AddScoped<ISeguidorRepository, SeguidorRepositoryImpl>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 
