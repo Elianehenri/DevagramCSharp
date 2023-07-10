@@ -22,6 +22,7 @@ var connectionstring = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<DevagramContext>(options => options.UseSqlServer(connectionstring));
 builder.Services.AddScoped<ISeguidorRepository, SeguidorRepositoryImpl>();
 builder.Services.AddScoped<IPublicacaoRepository, PublicacaoRepositoryImpl>();
+builder.Services.AddScoped<IComentarioRepository, ComentarioRepositoryImpl>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 
