@@ -19,6 +19,10 @@ namespace DevagramCSharp.Repository.Impl
             _context.Update(usuario);
             _context.SaveChanges();
         }
+        public List<Usuario> GetUsuarioNome(string nome)
+        {
+            return _context.Usuarios.Where(u => u.Nome.Contains(nome)).ToList();
+        }
 
         public Usuario GetUsuarioPorId(int id)
         {

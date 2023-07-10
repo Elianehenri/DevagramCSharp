@@ -13,7 +13,7 @@ namespace DevagramCSharp.Repository
 
         public bool VerificarEmail(string email);
 
-
+        List<Usuario> GetUsuarioNome(string nome);
 
     }
 }
