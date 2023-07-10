@@ -23,6 +23,8 @@ builder.Services.AddDbContext<DevagramContext>(options => options.UseSqlServer(c
 builder.Services.AddScoped<ISeguidorRepository, SeguidorRepositoryImpl>();
 builder.Services.AddScoped<IPublicacaoRepository, PublicacaoRepositoryImpl>();
 builder.Services.AddScoped<IComentarioRepository, ComentarioRepositoryImpl>();
+builder.Services.AddScoped<ICurtidaRepository, CurtidaRepositoryImpl>();
+
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 
