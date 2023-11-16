@@ -26,7 +26,7 @@ implementando recursos fundamentais do aplicativo.
 
 ## Pré-requisitos
 
-- Visual Studio 2023 (ou versão mais recente)
+- Visual Studio 2022 (ou versão mais recente)
 - SQL Server (ou outro banco de dados compatível)
 - Conexão com a internet
 
